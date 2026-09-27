@@ -82,6 +82,8 @@ before it leaves.
 
 ## 5. Bridge Sprint (rhythm / stop-to-stop tapping)
 
+> ▶️ **Playable browser prototype:** [`bridge_sprint/`](bridge_sprint/). Open `bridge_sprint/index.html`.
+
 **Pitch:** The tram stopped on the Petőfi híd and the doors won't open. Walk
 the last stretch to BME by tapping to the beat.
 
