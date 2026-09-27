@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cocktail Flow</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#browse">
+      <span class="brand-mark" aria-hidden="true">🍸</span>
+      <span>Cocktail<strong>Flow</strong></span>
+    </a>
+    <nav class="main-nav" aria-label="Main">
+      <a href="#browse" data-view="browse">Browse</a>
+      <a href="#bar" data-view="bar">My Bar</a>
+      <a href="#shopping" data-view="shopping">Shopping Suggestions</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Browse -->
+    <section id="view-browse" class="view" hidden>
+      <div class="hero">
+        <h1>Discover cocktails</h1>
+        <p>Browse recipes by base spirit, type, strength, colour or collection.</p>
+        <input id="search" class="search" type="search" placeholder="Search cocktails or ingredients…" aria-label="Search cocktails">
+      </div>
+      <div class="category-tabs" id="category-tabs" role="tablist"></div>
+      <div class="chips" id="category-values"></div>
+      <p class="result-count" id="browse-count"></p>
+      <div class="grid" id="browse-grid"></div>
+    </section>
+
+    <!-- My Bar -->
+    <section id="view-bar" class="view" hidden>
+      <div class="hero">
+        <h1>My Bar</h1>
+        <p>Tick what you have at home and see what you can make right now.</p>
+      </div>
+      <div class="bar-layout">
+        <aside class="ingredient-panel" id="ingredient-panel-bar"></aside>
+        <div class="bar-results">
+          <h2>You can make <span class="pill" id="can-make-count">0</span></h2>
+          <div class="grid" id="can-make-grid"></div>
+          <h2>Missing just one ingredient <span class="pill muted" id="almost-count">0</span></h2>
+          <div class="grid" id="almost-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shopping Suggestions -->
+    <section id="view-shopping" class="view" hidden>
+      <div class="hero">
+        <h1>Shopping Suggestions</h1>
+        <p>Tell us what you have. We'll suggest what to buy next to unlock the most cocktails.</p>
+      </div>
+      <div class="bar-layout">
+        <aside class="ingredient-panel" id="ingredient-panel-shop"></aside>
+        <div id="shopping-results"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Recipe dialog -->
+  <dialog id="recipe-dialog" class="recipe-dialog">
+    <div id="recipe-content"></div>
+  </dialog>
+
+  <footer class="site-footer">
+    Inspired by <a href="https://cocktailflow.com/" target="_blank" rel="noopener">cocktailflow.com</a>. Please drink responsibly.
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

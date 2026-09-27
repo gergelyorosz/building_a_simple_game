@@ -1,0 +1,162 @@
+:root {
+  --bg: #14121c;
+  --surface: #1e1b29;
+  --surface-2: #282437;
+  --border: #37314b;
+  --text: #f3f0fa;
+  --muted: #a39cb8;
+  --accent: #ff7a59;
+  --accent-2: #ffb347;
+  --ok: #4fd1a5;
+  --radius: 14px;
+
+  --c-red: #e2474b; --c-pink: #f06eaa; --c-orange: #f7913d; --c-yellow: #f5cf4a;
+  --c-green: #6cc24a; --c-blue: #3b9df8; --c-brown: #8d5a3b; --c-white: #eee9dd; --c-clear: #b8d8e8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+a { color: var(--accent-2); }
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  padding: 14px 24px;
+  background: rgba(20, 18, 28, .92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font-size: 1.3rem; }
+.brand strong { color: var(--accent); }
+.brand-mark { font-size: 1.5rem; }
+.main-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.main-nav a {
+  color: var(--muted); text-decoration: none; padding: 8px 14px; border-radius: 999px; font-weight: 500;
+}
+.main-nav a:hover { color: var(--text); background: var(--surface-2); }
+.main-nav a.active { color: #1a1320; background: var(--accent); }
+
+main { max-width: 1200px; margin: 0 auto; padding: 0 16px 48px; }
+
+.hero { text-align: center; padding: 36px 0 20px; }
+.hero h1 { margin: 0 0 6px; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.hero p { margin: 0; color: var(--muted); }
+
+.search {
+  margin-top: 20px; width: min(520px, 100%);
+  padding: 12px 18px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font-size: 1rem;
+}
+.search:focus { outline: 2px solid var(--accent); }
+
+/* Category tabs & chips */
+.category-tabs { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.category-tabs button, .chip {
+  font: inherit; cursor: pointer; border: 1px solid var(--border);
+  background: var(--surface); color: var(--muted); border-radius: 999px; padding: 7px 16px;
+}
+.category-tabs button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.chips { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip:hover { color: var(--text); border-color: var(--muted); }
+.chip.active { background: var(--accent); color: #1a1320; border-color: var(--accent); }
+.chip .count { opacity: .7; font-size: .85em; margin-left: 4px; }
+
+.result-count { color: var(--muted); text-align: center; margin: 4px 0 16px; }
+
+/* Cocktail grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer; text-align: left; font: inherit; color: inherit; padding: 0;
+  transition: transform .15s, border-color .15s;
+}
+.card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.card-art {
+  height: 110px; display: grid; place-items: center; font-size: 3rem;
+  background: radial-gradient(circle at 50% 70%, var(--drink), transparent 70%), var(--surface-2);
+}
+.card-body { padding: 12px 14px 14px; }
+.card-body h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.card-meta { color: var(--muted); font-size: .85rem; }
+.card-missing { margin-top: 6px; font-size: .85rem; color: var(--accent-2); }
+
+.tag { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); margin: 2px 4px 2px 0; }
+
+.empty { color: var(--muted); padding: 20px; background: var(--surface); border: 1px dashed var(--border); border-radius: var(--radius); grid-column: 1 / -1; }
+
+/* My Bar layout */
+.bar-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
+@media (max-width: 800px) { .bar-layout { grid-template-columns: 1fr; } }
+
+.ingredient-panel {
+  position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+}
+@media (max-width: 800px) { .ingredient-panel { position: static; max-height: 420px; } }
+.panel-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.panel-top h2 { margin: 0; font-size: 1.1rem; }
+.link-btn { background: none; border: none; color: var(--accent-2); cursor: pointer; font: inherit; padding: 0; }
+.ing-filter {
+  width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); margin-bottom: 8px; font: inherit;
+}
+.pantry-toggle { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: .9rem; margin-bottom: 8px; }
+.ing-group h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 6px; }
+.ing-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.ing-list .chip { padding: 4px 11px; font-size: .88rem; }
+
+.bar-results h2 { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; margin-top: 0; }
+.pill { background: var(--ok); color: #0c2a20; border-radius: 999px; padding: 1px 10px; font-size: .9rem; }
+.pill.muted { background: var(--accent-2); color: #2b1a00; }
+
+/* Shopping */
+.shop-status { color: var(--muted); margin: 0 0 16px; }
+.shop-cards { display: grid; gap: 18px; }
+.shop-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
+  border-top: 4px solid var(--accent);
+}
+.shop-card:nth-child(2) { border-top-color: var(--ok); }
+.shop-card:nth-child(3) { border-top-color: var(--c-blue); }
+.shop-card h2 { margin: 0 0 4px; font-size: 1.25rem; }
+.shop-card .sub { color: var(--muted); margin: 0 0 14px; }
+.buy-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.buy-item { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; }
+.buy-item strong { display: block; }
+.buy-item span { color: var(--muted); font-size: .85rem; }
+.unlocks { font-size: .95rem; }
+.unlocks .link-btn { text-decoration: underline; }
+.single-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.single-row:first-of-type { border-top: none; }
+.add-btn {
+  font: inherit; cursor: pointer; border: none; border-radius: 999px; padding: 6px 14px;
+  background: var(--accent); color: #1a1320; font-weight: 600;
+}
+
+/* Recipe dialog */
+.recipe-dialog {
+  width: min(560px, calc(100vw - 32px)); border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); padding: 0;
+}
+.recipe-dialog::backdrop { background: rgba(0, 0, 0, .65); }
+.recipe-head { padding: 24px 24px 16px; background: radial-gradient(circle at 85% 30%, var(--drink), transparent 55%), var(--surface-2); position: relative; }
+.recipe-head h2 { margin: 0 0 6px; font-size: 1.7rem; }
+.close-btn { position: absolute; top: 12px; right: 12px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 999px; width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem; }
+.recipe-body { padding: 16px 24px 24px; }
+.recipe-body h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 16px 0 6px; }
+.recipe-ings { list-style: none; padding: 0; margin: 0; }
+.recipe-ings li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.recipe-ings li.have::before { content: "✓ "; color: var(--ok); }
+.recipe-ings li.missing { color: var(--accent-2); }
+.recipe-ings li span:last-child { color: var(--muted); }
+
+.site-footer { text-align: center; color: var(--muted); padding: 24px; border-top: 1px solid var(--border); font-size: .9rem; }
