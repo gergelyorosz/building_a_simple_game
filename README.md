@@ -9,4 +9,4 @@ Project accompanying the article [Building a Simple Game](https://newsletter.pra
 - **← → / A D**: track in freefall, steer under the canopy
 - **M**: sound on/off · **Esc**: back to the title screen
 
-Open the parachute as late as you dare for a bigger freefall bonus, collect kredits, dodge the pizza boxes and failed exam papers thrown from the windows, and land on the target. There are five jumps: Gólyahét, ZH-hét, Vizsgaidőszak, Schönherz Qpa (Mátrix night) and Diplomaosztó.
+Open the parachute as late as you dare for a bigger freefall bonus, collect kredits, dodge the pizza boxes and failed exam papers thrown from the windows, and land on the target. Don't land on the Sörváltó (the beer relay on the lawn), or you'll snap its table in half. There are five jumps: Gólyahét, ZH-hét, Vizsgaidőszak, Schönherz Qpa (Mátrix night) and Diplomaosztó.
