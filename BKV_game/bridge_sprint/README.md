@@ -23,13 +23,13 @@ python3 -m http.server 8000
 |-------|-------------|-------|----------|
 | 🚋 Ride (9 stops) | **Hold** during sharp curves, or you fall and lose stamina. **Tap** when the ticket inspector reaches you, or you're fined and lose 2:00. | hold / tap anywhere | hold / press Space |
 | 🚪 Stuck on the bridge | Tap when the door button turns **green**. | tap | Space |
-| 🏃 Bridge sprint | **Alternate** left and right to run. Tapping the same side twice makes you trip. Jump over pigeons, suitcases and track-works barriers. | bottom-left / bottom-right, top half to jump | ← / →, Space or ↑ to jump |
-| 🏛️ BME stairs | Alternate left and right to climb 16 steps. | bottom-left / bottom-right | ← / → |
+| 🏃 Bridge sprint | You run automatically. **Jump** over pigeons, suitcases and track-works barriers; hitting one knocks you down for a moment. | tap anywhere | Space, ↑ or Enter |
+| 🏛️ BME stairs | Automatic climb while the professor starts closing the door. | none | none |
 
 Pickups on the bridge:
 
 - **Coins:** add to your score
-- **Lángos:** +35 stamina (at low stamina your top speed is capped)
+- **Lángos:** +35 stamina (stamina drains as you run; below 20 you slow down)
 - **Túró Rudi:** 4-second speed boost
 - **"+2:00" text from the prof:** the professor is running late too, so the deadline moves to 08:17
 

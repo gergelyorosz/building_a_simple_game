@@ -172,13 +172,8 @@
     const r = canvas.getBoundingClientRect();
     return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
   }
-  function zoneFor(x, y) {
-    if ((state === 'bridge' || state === 'stairs') && y > H * 0.5) {
-      if (x < W * 0.4) return 'L';
-      if (x > W * 0.6) return 'R';
-    }
-    return 'A';
-  }
+  // Every tap or game key is the same action; the stage decides what it means.
+  const zoneFor = () => 'A';
 
   // Keys only reach the page when it has focus (matters when embedded in an iframe).
   canvas.tabIndex = 0;
@@ -227,8 +222,7 @@
       case 'title': newGame(); break;
       case 'ride': rideTap(); break;
       case 'stuck': stuckTap(); break;
-      case 'bridge': if (k === 'A') bridgeJump(); else bridgeStep(k); break;
-      case 'stairs': if (k !== 'A') stairsStep(k); break;
+      case 'bridge': bridgeJump(); break;
       case 'result': if (Res.t > 0.8) newGame(); break;
     }
   }
@@ -660,24 +654,7 @@
     B.items.push({ type: 'rudi', x: free(rand(35, 60)), h: 0.6 });
     B.items.push({ type: 'rudi', x: free(rand(115, 135)), h: 0.6 });
     B.items.push({ type: 'prof', x: free(rand(90, 180)), h: 2.1 });
-    toast('Tap LEFT / RIGHT alternately to run!', '#ffd23f');
-  }
-
-  function bridgeStep(side) {
-    if (B.stumble > 0) return;
-    if (B.last === side) {
-      B.stumble = 0.5;
-      B.v *= 0.3;
-      B.last = null;
-      G.trips++;
-      SFX.bad();
-      toast('Tripped! Alternate LEFT / RIGHT', '#ffd23f');
-      return;
-    }
-    B.last = side;
-    B.v += G.stamina < 20 ? 0.9 : 1.4;
-    G.stamina = Math.max(0, G.stamina - 0.7);
-    SFX.step();
+    toast('You run automatically: tap or press Space to JUMP!', '#ffd23f');
   }
 
   function bridgeJump() {
@@ -712,24 +689,22 @@
   function updateBridge(dt) {
     B.t += dt;
     G.clock += RUN_RATE * dt;
-    const maxV = B.boost > 0 ? 12 : (G.stamina < 20 ? 5 : 8.5);
+    // Auto-run: speed eases toward a target set by boost and stamina.
+    const target = B.boost > 0 ? 11 : (G.stamina < 20 ? 5.5 : 7.5);
+    if (B.boost > 0) B.boost -= dt;
     if (B.stumble > 0) {
       B.stumble -= dt;
       B.v = Math.max(0, B.v - 20 * dt);
+    } else {
+      B.v += (target - B.v) * Math.min(1, 2.5 * dt);
     }
-    if (B.boost > 0) {
-      B.boost -= dt;
-      if (B.stumble <= 0) B.v = Math.max(B.v, 7);
-    }
-    B.v -= B.v * 0.9 * dt;
-    B.v = Math.min(B.v, maxV);
     B.x += B.v * dt;
     if (B.y > 0 || B.vy > 0) {
       B.vy -= 26 * dt;
       B.y += B.vy * dt;
       if (B.y <= 0) { B.y = 0; B.vy = 0; }
     }
-    G.stamina = Math.min(100, G.stamina + 2.5 * dt);
+    G.stamina = Math.max(0, G.stamina - 1.5 * dt);
 
     for (const o of B.obs) {
       o.ph += dt * 12;
@@ -1054,7 +1029,7 @@
       run: true, phase: B.x * 1.7, amp: B.y > 0 ? 0.4 : Math.min(1, B.v / 3),
       lean: B.stumble > 0 ? 0.7 : 0.08 + B.v / 70,
     }));
-    drawStepButtons(B.last, true);
+    drawHint(B.t < 6 ? 'Tap anywhere or press Space / ↑ to JUMP' : 'Space / tap to jump');
   }
 
   // ================================================================ STAIRS
@@ -1063,32 +1038,25 @@
   const stairY = i => 480 - i * 14;
 
   function initStairs() {
-    St = { step: 0, shown: 0, last: null, stumble: 0, t: 0, done: false, doneT: 0 };
-    toast('Up the stairs! Keep alternating', '#ffd23f');
+    St = { step: 0, shown: 0, t: 0, acc: 0, done: false, doneT: 0 };
+    toast('Up the stairs to the K building!', '#ffd23f');
   }
   function updateStairs(dt) {
     St.t += dt;
     St.shown += (St.step - St.shown) * Math.min(1, dt * 14);
-    St.stumble = Math.max(0, St.stumble - dt);
     if (St.done) {
       St.doneT += dt;
       if (St.doneT > 0.7) goto('result');
       return;
     }
     G.clock += RUN_RATE * dt;
-  }
-  function stairsStep(side) {
-    if (St.done || St.stumble > 0) return;
-    if (St.last === side) {
-      St.step = Math.max(0, St.step - 1);
-      St.stumble = 0.35;
-      St.last = null;
-      G.trips++;
-      SFX.bad();
-      toast('Slipped a step!', '#ff7b54');
-      return;
+    St.acc += dt;
+    if (St.acc >= 0.17) {
+      St.acc -= 0.17;
+      stairsStep();
     }
-    St.last = side;
+  }
+  function stairsStep() {
     St.step++;
     SFX.step();
     if (St.step >= STAIRS_N) {
@@ -1157,14 +1125,13 @@
     if (showPlayer) {
       const s = St.shown;
       drawPerson(stairX(s) - 16, stairY(s), playerStyle({
-        run: true, phase: s * Math.PI, amp: 0.8, lean: St.stumble > 0 ? -0.4 : 0.25,
+        run: true, phase: s * Math.PI, amp: 0.8, lean: 0.25,
       }));
     }
   }
 
   function drawStairs() {
     drawStairsScene(true);
-    drawStepButtons(St.last, false);
   }
 
   // ================================================================ RESULT
@@ -1225,14 +1192,14 @@
     const lines = [
       ['🚋', 'Ride the Combino: HOLD on sharp curves, TAP for the inspector'],
       ['🚪', 'Stuck on Petőfi híd? Tap when the door button turns green'],
-      ['🏃', 'Run: alternate LEFT / RIGHT taps · tap the top half to JUMP'],
+      ['🏃', 'You run on your own: tap or press Space to JUMP obstacles'],
       ['🥯', 'Grab lángos (stamina), Túró Rudi (boost) and the +2:00 text'],
     ];
     lines.forEach(([icon, l], i) => {
       text(icon, W / 2 - 290, 200 + i * 34, 20, '#fff', 'center', '400');
       text(l, W / 2 - 268, 200 + i * 34, 17, '#ddd', 'left', '500');
     });
-    text('Keyboard: ← → (or A D) run · Space hold / tap / jump · M mute', W / 2, 340, 15, '#bbb', 'center', '600');
+    text('Keyboard: Space (or ↑ / Enter) to hold, tap and jump · M mute', W / 2, 340, 15, '#bbb', 'center', '600');
     ctx.fillStyle = 'rgba(10,12,16,0.7)';
     rr(W / 2 - 190, 402, 380, 46, 23);
     ctx.fill();
@@ -1309,18 +1276,8 @@
     }
   }
 
-  function drawStepButtons(last, canJump) {
-    for (const [side, x] of [['L', 90], ['R', W - 90]]) {
-      const next = last !== side;
-      ctx.globalAlpha = next ? 0.85 : 0.3;
-      ctx.fillStyle = next ? '#ffd23f' : '#ffffff';
-      circle(x, H - 80, 50);
-      ctx.globalAlpha = 1;
-      text(side === 'L' ? '◀ L' : 'R ▶', x, H - 88, 24, '#222', 'center', '900');
-      text(side === 'L' ? '← or A' : '→ or D', x, H - 62, 13, '#222', 'center', '700');
-    }
-    text(canJump ? 'Alternate ← / → to run · Space or ↑ to jump (touch: tap top half)' : 'Alternate ← / → to climb',
-      W / 2, H - 22, 15, 'rgba(255,255,255,0.85)', 'center', '600');
+  function drawHint(msg) {
+    text(msg, W / 2, H - 22, 16, 'rgba(255,255,255,0.9)', 'center', '700');
   }
 
   function burst(x, y, color, n) {
