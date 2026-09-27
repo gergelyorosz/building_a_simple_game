@@ -180,8 +180,18 @@
     return 'A';
   }
 
+  // Keys only reach the page when it has focus (matters when embedded in an iframe).
+  canvas.tabIndex = 0;
+  let focused = document.hasFocus();
+  const grabFocus = () => { try { canvas.focus({ preventScroll: true }); } catch (err) { /* ignore */ } };
+  grabFocus();
+  window.addEventListener('focus', () => { focused = true; });
+  document.addEventListener('mousedown', grabFocus);
+
   canvas.addEventListener('pointerdown', e => {
     e.preventDefault();
+    grabFocus();
+    focused = true;
     try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     pointers.add(e.pointerId);
     unlockAudio();
@@ -199,6 +209,7 @@
   };
   window.addEventListener('keydown', e => {
     if (e.code === 'KeyM') { muted = !muted; toast(muted ? 'Sound off' : 'Sound on'); return; }
+    focused = true;
     const k = KEYMAP[e.code];
     if (!k) return;
     e.preventDefault();
@@ -208,7 +219,7 @@
     press(k);
   });
   window.addEventListener('keyup', e => keysDown.delete(e.code));
-  window.addEventListener('blur', () => { keysDown.clear(); pointers.clear(); });
+  window.addEventListener('blur', () => { focused = false; keysDown.clear(); pointers.clear(); });
 
   function press(k) {
     if (fade.dir === 1) return;
@@ -527,7 +538,7 @@
     if (ev === 'curve' && !R.res && R.t >= CW0) {
       const active = R.t >= CA0;
       const flash = Math.floor(titleT * 6) % 2 === 0;
-      banner(active ? 'HOLD ON!' : '⚠ SHARP CURVE AHEAD: HOLD', active ? '#ffd23f' : (flash ? '#ff7b54' : '#ffd23f'));
+      banner(active ? 'HOLD ON! (hold Space)' : '⚠ SHARP CURVE AHEAD: HOLD (Space)', active ? '#ffd23f' : (flash ? '#ff7b54' : '#ffd23f'));
       if (active) {
         const need = (CA1 - CA0) * 0.7;
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -539,7 +550,7 @@
       }
     } else if (ev === 'insp' && !R.res && R.t >= IA) {
       const ready = R.t >= IARR;
-      banner(ready ? 'TAP NOW: show your pass!' : 'Jegyellenőr! Ticket inspector coming…', ready ? '#7CFC9A' : '#ffd23f');
+      banner(ready ? 'TAP / SPACE NOW: show your pass!' : 'Jegyellenőr! Ticket inspector coming…', ready ? '#7CFC9A' : '#ffd23f');
     }
   }
 
@@ -610,7 +621,7 @@
     ctx.fillStyle = on ? '#2ecc71' : '#e74c3c';
     circle(758, 305, 14);
     text('⇔', 758, 305, 14, '#fff');
-    if (!S.done) banner(S.lock > 0 ? 'Not yet…' : 'TAP when the door button turns GREEN', S.green ? '#7CFC9A' : '#fff');
+    if (!S.done) banner(S.lock > 0 ? 'Not yet…' : 'TAP / SPACE when the door button turns GREEN', S.green ? '#7CFC9A' : '#fff');
   }
 
   // ================================================================ BRIDGE
@@ -1221,7 +1232,7 @@
       text(icon, W / 2 - 290, 200 + i * 34, 20, '#fff', 'center', '400');
       text(l, W / 2 - 268, 200 + i * 34, 17, '#ddd', 'left', '500');
     });
-    text('Keys: ← → run · Space hold/tap/jump · M mute', W / 2, 340, 14, '#999', 'center', '500');
+    text('Keyboard: ← → (or A D) run · Space hold / tap / jump · M mute', W / 2, 340, 15, '#bbb', 'center', '600');
     ctx.fillStyle = 'rgba(10,12,16,0.7)';
     rr(W / 2 - 190, 402, 380, 46, 23);
     ctx.fill();
@@ -1305,9 +1316,10 @@
       ctx.fillStyle = next ? '#ffd23f' : '#ffffff';
       circle(x, H - 80, 50);
       ctx.globalAlpha = 1;
-      text(side === 'L' ? '◀ L' : 'R ▶', x, H - 80, 24, '#222', 'center', '900');
+      text(side === 'L' ? '◀ L' : 'R ▶', x, H - 88, 24, '#222', 'center', '900');
+      text(side === 'L' ? '← or A' : '→ or D', x, H - 62, 13, '#222', 'center', '700');
     }
-    text(canJump ? 'Alternate L / R to run · tap top half or Space to jump' : 'Alternate L / R to climb',
+    text(canJump ? 'Alternate ← / → to run · Space or ↑ to jump (touch: tap top half)' : 'Alternate ← / → to climb',
       W / 2, H - 22, 15, 'rgba(255,255,255,0.85)', 'center', '600');
   }
 
@@ -1408,6 +1420,12 @@
     ctx.restore();
     if (state !== 'title' && state !== 'result') drawHUD();
     drawToasts();
+    if (!focused && state !== 'result') {
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      rr(W / 2 - 200, H - 60, 400, 34, 17);
+      ctx.fill();
+      text('Click the game to use the keyboard', W / 2, H - 43, 15, '#ffd23f', 'center', '700');
+    }
     if (fade.a > 0) {
       ctx.fillStyle = `rgba(0,0,0,${fade.a})`;
       ctx.fillRect(0, 0, W, H);
